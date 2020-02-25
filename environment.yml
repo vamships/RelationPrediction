@@ -24,4 +24,4 @@ dependencies:
       - cmake
       - MulticoreTSNE
       - pre-commit
-      - tensorflow==1.4.0
+      - tensorflow-gpu==1.4.0
