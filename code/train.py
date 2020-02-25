@@ -1,11 +1,18 @@
 import argparse
 import random
 
+import logging
 import tensorflow as tf
 from optimization.optimize import build_tensorflow
 from common import settings_reader, io, model_builder, optimizer_parameter_parser, evaluation, auxilliaries
 from model import Model
 import numpy as np
+import pandas as pd
+
+logging.basicConfig(
+    format="%(asctime)s| %(message)s", datefmt="%d-%m-%y %H:%M:%S", level=logging.INFO
+)
+logger = logging.getLogger("split_data_to_sets")
 
 parser = argparse.ArgumentParser(description="Train a model on a given dataset.")
 parser.add_argument("--settings", help="Filepath for settings file.", required=True)
@@ -22,42 +29,31 @@ dataset = args.dataset
 
 relations_path = dataset + '/relations.dict'
 entities_path = dataset + '/entities.dict'
-train_path = dataset + '/train.txt'
-valid_path = dataset + '/valid.txt'
-test_path = dataset + '/test.txt'
+train_path = dataset + '/formatted/train_triplets.csv'
+valid_path = dataset + '/formatted/valid_triplets.csv'
+test_path = dataset + '/formatted/test_triplets.csv'
 
 # Extend paths for accuracy evaluation:
 if settings['Evaluation']['Metric'] == 'Accuracy':
     valid_path = dataset + '/valid_accuracy.txt'
     test_path = dataset + '/test_accuracy.txt'
 
-train_triplets = io.read_triplets_as_list(train_path, entities_path, relations_path)
+train_triplets = pd.read_csv(train_path, header=0)
+valid_triplets = pd.read_csv(valid_path, header=0)
+test_triplets = pd.read_csv(test_path, header=0)
 
-valid_triplets = io.read_triplets_as_list(valid_path, entities_path, relations_path)
-test_triplets = io.read_triplets_as_list(test_path, entities_path, relations_path)
-
-
-train_triplets = np.array(train_triplets)
-valid_triplets = np.array(valid_triplets)
-test_triplets = np.array(test_triplets)
+train_triplets = train_triplets.values
+valid_triplets = valid_triplets.values
+test_triplets = test_triplets.values
 
 entities = io.read_dictionary(entities_path)
 relations = io.read_dictionary(relations_path)
 
-'''
-shuffled_rels = np.arange(len(relations))
-np.random.shuffle(shuffled_rels)
-
-known_rels = shuffled_rels[:int(len(relations)/2)]
-target_rels = shuffled_rels[int(len(relations)/2):]
-
-known_train = train_triplets[np.where(np.in1d(train_triplets[:,1], known_rels))]
-target_train = train_triplets[np.where(np.in1d(train_triplets[:,1], target_rels))]
-known_valid = valid_triplets[np.where(np.in1d(valid_triplets[:,1], known_rels))]
-target_valid = valid_triplets[np.where(np.in1d(valid_triplets[:,1], target_rels))]
-known_test = test_triplets[np.where(np.in1d(test_triplets[:,1], known_rels))]
-target_test = test_triplets[np.where(np.in1d(test_triplets[:,1], target_rels))]
-'''
+logger.info("Entities: {}".format(len(entities)))
+logger.info("Relations: {}".format(len(relations)))
+logger.info("Splits count: {train}(train), {valid}(valid), {test}(test)".format(
+    train=train_triplets.shape[0], valid=valid_triplets.shape[0],
+    test=test_triplets.shape[0]))
 
 '''
 Load general settings
