@@ -1,0 +1,27 @@
+name: rgcn
+
+channels:
+  - conda-forge
+  - pytorch
+
+dependencies:
+  - autopep8
+  - git-lfs
+  - jupyter
+  - matplotlib
+  - networkx
+  - numpy
+  - pandas
+  - pip
+  - pytest
+  - pytorch
+  - python>=3.3,<3.6
+  - scikit-learn
+  - scipy
+  - theano
+  - tqdm
+  - pip:
+      - cmake
+      - MulticoreTSNE
+      - pre-commit
+      - tensorflow==1.4.0

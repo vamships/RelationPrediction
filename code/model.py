@@ -1,7 +1,8 @@
 import tensorflow as tf
 
 """
-Class representing an hierarchically organized model to be initialized in a dependency injection-like manner.
+Class representing an hierarchically organized model to be initialized in a
+dependency injection-like manner.
 """
 
 
@@ -10,9 +11,9 @@ class Model:
     score_all_objects_graph = None
     score_graph = None
     session = None
-    next_component=None
-    save_iter=0
-    saver=None
+    next_component = None
+    save_iter = 0
+    saver = None
 
     def __init__(self, next_component, settings):
         self.next_component = next_component
@@ -21,6 +22,9 @@ class Model:
         self.entity_count = int(self.settings['EntityCount'])
         self.relation_count = int(self.settings['RelationCount'])
         self.edge_count = int(self.settings['EdgeCount'])
+
+        self.train_triplets = None
+        self.test_graph = None
 
         self.parse_settings()
 
@@ -38,7 +42,6 @@ class Model:
         self.saver.restore(self.session, save_path+"-"+str(self.save_iter))
         self.save_iter += 1
 
-
     '''
     High-level functions:
     '''
@@ -54,7 +57,6 @@ class Model:
             d = {self.get_test_input_variables()[0]: triplets}
 
         return self.session.run(self.score_graph, feed_dict=d)
-
 
     def score_all_subjects(self, triplets):
         if self.score_all_subjects_graph is None:
@@ -88,7 +90,7 @@ class Model:
 
     def preprocess(self, triplets):
         self.train_triplets = triplets
-        pass #return self.__local_run_delegate__('preprocess', triplets)
+        pass  # return self.__local_run_delegate__('preprocess', triplets)
 
     def initialize_train(self):
         return self.__local_run_delegate__('initialize_train')
@@ -164,7 +166,8 @@ class Model:
             function(*args)
 
     '''
-    Run the function locally if it exists, then compose with the next component through addition:
+    Run the function locally if it exists,
+    then compose with the next component through addition:
     '''
     def __local_expand_delegate__(self, name, *args, base=None):
         if base is None:
@@ -180,7 +183,3 @@ class Model:
             function = getattr(self.next_component, name)
             return function(*args) + local_result
         return local_result
-
-
-
-
