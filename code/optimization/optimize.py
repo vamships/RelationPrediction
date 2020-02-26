@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 import logging
 import pandas as pd
+from tqdm import trange
 
 logging.basicConfig(
     format="%(asctime)s| %(message)s", datefmt="%d-%m-%y %H:%M:%S", level=logging.INFO
@@ -34,9 +35,9 @@ class Optimizer:
 
         i = 0
         next_batch = self.stack.next_batch()
-        while next_batch is not None:
+        for i in trange(500):
             i += 1
-            logger.info("At epoch {}".format(i))
+            # logger.info("At epoch {}".format(i))
             self.stack.set_iteration(i)
 
             processed_batch = self.stack.process_data(next_batch)

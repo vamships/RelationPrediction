@@ -106,7 +106,7 @@ class TrainLossReporter(IOptimizer):
         
         self.cummulative_loss += loss
 
-        if self.iteration == 1:
+        if self.iteration % 10 == 0:
             self.cummulative_loss = 0
             logger.info("Initial loss: {}".format(loss))
             return value_of_next
