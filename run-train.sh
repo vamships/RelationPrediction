@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DATASET="STRING"
+DATASET="STRING_mirrored"
 SETTINGS=$1
 
 SCRIPT_DIR="`pwd`"

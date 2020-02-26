@@ -1,6 +1,15 @@
 from abstract import IOptimizer
 import random
 import numpy as np
+import logging
+import pandas as pd
+
+logging.basicConfig(
+    format="%(asctime)s| %(message)s", datefmt="%d-%m-%y %H:%M:%S", level=logging.INFO
+)
+
+logger = logging.getLogger("algorithms")
+
 
 class IterationCounter(IOptimizer):
 
@@ -16,6 +25,7 @@ class IterationCounter(IOptimizer):
             return self.next_component.next_batch()
         else:
             return None
+
 
 class Minibatches(IOptimizer):
 
@@ -34,8 +44,8 @@ class Minibatches(IOptimizer):
             return self.__random_sample()
     
     def __contiguous_sample(self):
-        if current_batch is None:
-            current_batch = self.next_component.next_batch()
+        if self.current_batch is None:
+            self.current_batch = self.next_component.next_batch()
         pass
 
     def __random_sample(self):
@@ -57,6 +67,7 @@ class SampleTransformer(IOptimizer):
     def process_data(self, training_data):
         data = self.next_component.process_data(training_data)
         return self.transform_function(data)
+
 
 class ModelSaver(IOptimizer):
 
@@ -97,7 +108,7 @@ class TrainLossReporter(IOptimizer):
 
         if self.iteration == 1:
             self.cummulative_loss = 0
-            print("Initial loss: "+str(loss))
+            logger.info("Initial loss: {}".format(loss))
             return value_of_next
                   
         if self.iteration % self.evaluate_every_n == 1:
@@ -106,12 +117,8 @@ class TrainLossReporter(IOptimizer):
 
             begin_iteration = self.iteration - self.evaluate_every_n
             end_iteration = self.iteration - 1
-            print("Average train loss for iteration "
-                  + str(begin_iteration)
-                  + "-"
-                  + str(end_iteration)
-                  + ": "
-                  + str(average_loss))
+            logger.info("Average train loss for iteration {}-{}: {}".format(
+                begin_iteration, end_iteration, average_loss))
 
         return value_of_next
 
@@ -146,9 +153,11 @@ class EarlyStopper(IOptimizer):
             if self.criteria == 'score_validation_data':
                 validation_score = self.scoring_function(self.validation_data)
 
-                print("Tested validation score at iteration "+str(self.iteration)+". Result: "+str(validation_score))
+                logger.info("Tested validation score at iteration {}")
+                logger.info("Result: {}".format(self.iteration, validation_score))
                 if self.previous_validation_score is not None:
-                    if not self.comparator(validation_score, self.previous_validation_score):
+                    if not self.comparator(validation_score,
+                                           self.previous_validation_score):
                         if self.iteration > self.burnin:
                             print("Stopping criterion reached.")
                         
