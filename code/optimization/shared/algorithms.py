@@ -153,8 +153,9 @@ class EarlyStopper(IOptimizer):
             if self.criteria == 'score_validation_data':
                 validation_score = self.scoring_function(self.validation_data)
 
-                logger.info("Tested validation score at iteration {}")
-                logger.info("Result: {}".format(self.iteration, validation_score))
+                logger.info(
+                    "Tested validation score at iteration {}".format(self.iteration))
+                logger.info("Result: {}".format(validation_score))
                 if self.previous_validation_score is not None:
                     if not self.comparator(validation_score,
                                            self.previous_validation_score):
