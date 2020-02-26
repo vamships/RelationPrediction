@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DATASET="FB-Toutanova"
+DATASET="STRING"
 SETTINGS=$1
 
 SCRIPT_DIR="`pwd`"
